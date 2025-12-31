@@ -15,6 +15,14 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍪</text></svg>">
     
+    <!-- Preconnect untuk CDN -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Preload gambar kritis -->
+    <link rel="preload" as="image" href="koya.jpg" fetchpriority="high">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -34,6 +42,7 @@
             max-width: 100%;
             overflow-x: hidden;
             position: relative;
+            scroll-behavior: smooth;
         }
 
         body {
@@ -63,13 +72,15 @@
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('koya.jpg');
             background-size: cover;
             background-position: center;
+            background-attachment: fixed;
             min-height: 85vh;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             color: white;
-            padding: 80px 15px; /* Menjaga teks tidak mepet layar HP */
+            padding: 80px 15px;
+            position: relative;
         }
 
         .hero-content h1 {
@@ -109,19 +120,23 @@
             font-weight: bold;
         }
 
-        /* Gallery Fix */
+        /* Gallery Fix dengan placeholder */
         .gallery-item {
             overflow: hidden;
             border-radius: 15px;
             height: 250px;
             position: relative;
             margin-bottom: 15px;
+            background-color: #f5f5f5;
         }
         .gallery-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.6s ease;
+        }
+        .gallery-item img:hover {
+            transform: scale(1.05);
         }
 
         /* Testimonials */
@@ -169,6 +184,10 @@
             box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
             z-index: 1000;
             animation: pulse 2s infinite;
+            transition: transform 0.3s;
+        }
+        .wa-float:hover {
+            transform: scale(1.1);
         }
 
         @keyframes pulse {
@@ -177,14 +196,30 @@
             100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
         }
 
+        /* Image optimization */
+        img {
+            content-visibility: auto;
+        }
+
+        /* Cache hint untuk gambar */
+        .cache-hint {
+            display: none;
+        }
+
         /* RESPONSIVE BREAKPOINTS */
         @media (max-width: 991px) {
             .hero-content h1 { font-size: 2.8rem; }
+            .hero-section {
+                background-attachment: scroll;
+            }
         }
 
         @media (max-width: 767px) {
             .hero-content h1 { font-size: 2.2rem; }
-            .hero-section { min-height: 70vh; }
+            .hero-section { 
+                min-height: 70vh;
+                background-attachment: scroll;
+            }
             .card-product .row.g-0 { flex-direction: column; }
             .card-product .col-md-5 { height: 250px; }
             .border-start {
@@ -202,9 +237,22 @@
             .gallery-item { height: 180px; }
             .wa-float { width: 50px; height: 50px; font-size: 24px; bottom: 15px; right: 15px; }
         }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Hidden image untuk pre-cache -->
+    <div class="cache-hint">
+        <img src="koya.jpg" alt="precache" loading="eager" style="display:none;">
+    </div>
 
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
@@ -247,7 +295,7 @@
             <div class="row align-items-center g-5">
                 <div class="col-md-6 order-md-2" data-aos="fade-left">
                     <div class="position-relative">
-                        <img src="koya.jpg" alt="Kue Koya Mayasari" class="img-fluid rounded-4 shadow-lg border border-5 border-white">
+                        <img src="koya.jpg" alt="Kue Koya Mayasari" class="img-fluid rounded-4 shadow-lg border border-5 border-white" loading="lazy" width="600" height="400">
                         <div class="position-absolute bottom-0 start-0 bg-success text-white px-4 py-2 rounded-end fw-bold m-3">
                             <i class="fas fa-leaf"></i> 100% Bahan Alami
                         </div>
@@ -297,7 +345,7 @@
                     <div class="card card-product">
                         <div class="row g-0">
                             <div class="col-md-5">
-                                <img src="koya.jpg" alt="Kemasan Kue Koya" class="img-fluid w-100 h-100" style="object-fit: cover; min-height: 250px;">
+                                <img src="koya.jpg" alt="Kemasan Kue Koya" class="img-fluid w-100 h-100" style="object-fit: cover; min-height: 250px;" loading="lazy" width="500" height="500">
                             </div>
                             <div class="col-md-7">
                                 <div class="card-body d-flex flex-column justify-content-center h-100 p-4 p-lg-5">
@@ -335,12 +383,12 @@
                 <p class="text-muted">Intip proses dan kemasan kami.</p>
             </div>
             <div class="row g-3">
-                <div class="col-6 col-lg-4" data-aos="zoom-in"><div class="gallery-item"><img src="koya.jpg" alt="Foto 1"></div></div>
-                <div class="col-6 col-lg-4" data-aos="zoom-in"><div class="gallery-item"><img src="koya.jpg" alt="Foto 2"></div></div>
-                <div class="col-6 col-lg-4" data-aos="zoom-in"><div class="gallery-item"><img src="koya.jpg" alt="Foto 3"></div></div>
-                <div class="col-6 col-lg-4" data-aos="zoom-in"><div class="gallery-item"><img src="koya.jpg" alt="Foto 4"></div></div>
-                <div class="col-6 col-lg-4" data-aos="zoom-in"><div class="gallery-item"><img src="koya.jpg" alt="Foto 5"></div></div>
-                <div class="col-6 col-lg-4" data-aos="zoom-in"><div class="gallery-item"><img src="koya.jpg" alt="Foto 6"></div></div>
+                <div class="col-6 col-lg-4" data-aos="zoom-in"><div class="gallery-item"><img src="koya.jpg" alt="Foto 1" loading="lazy" width="400" height="250"></div></div>
+                <div class="col-6 col-lg-4" data-aos="zoom-in"><div class="gallery-item"><img src="koya.jpg" alt="Foto 2" loading="lazy" width="400" height="250"></div></div>
+                <div class="col-6 col-lg-4" data-aos="zoom-in"><div class="gallery-item"><img src="koya.jpg" alt="Foto 3" loading="lazy" width="400" height="250"></div></div>
+                <div class="col-6 col-lg-4" data-aos="zoom-in"><div class="gallery-item"><img src="koya.jpg" alt="Foto 4" loading="lazy" width="400" height="250"></div></div>
+                <div class="col-6 col-lg-4" data-aos="zoom-in"><div class="gallery-item"><img src="koya.jpg" alt="Foto 5" loading="lazy" width="400" height="250"></div></div>
+                <div class="col-6 col-lg-4" data-aos="zoom-in"><div class="gallery-item"><img src="koya.jpg" alt="Foto 6" loading="lazy" width="400" height="250"></div></div>
             </div>
         </div>
     </section>
@@ -418,7 +466,7 @@
                             <h3 class="mb-0 fw-bold"><i class="fab fa-whatsapp"></i> Formulir Pemesanan</h3>
                         </div>
                         <div class="card-body p-4 p-md-5">
-                            <form id="waForm" onsubmit="kirimPesan(event)">
+                            <form id="waForm">
                                 <div class="mb-3"><label class="form-label fw-bold">Nama Lengkap</label><input type="text" class="form-control" id="nama" required></div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3"><label class="form-label fw-bold">Jumlah (Pak)</label><input type="number" class="form-control" id="jumlah" min="1" required></div>
@@ -448,7 +496,7 @@
                 </div>
                 <div class="col-lg-8" data-aos="fade-left">
                     <div class="shadow rounded-4 overflow-hidden" style="height: 350px;">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d207.39937958372778!2d108.32927509591705!3d-7.316242171577697!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6f5955c36d65f5%3A0x5e5249b81c1fcb1f!2sKue%20Koya%20Mayasari!5e1!3m2!1sen!2sus!4v1767183605218!5m2!1sen!2sus" style="border:0; width:100%; height:100%;" allowfullscreen="" loading="lazy"></iframe>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d207.39937958372778!2d108.32927509591705!3d-7.316242171577697!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6f5955c36d65f5%3A0x5e5249b81c1fcb1f!2sKue%20Koya%20Mayasari!5e1!3m2!1sen!2sus!4v1767183605218!5m2!1sen!2sus" style="border:0; width:100%; height:100%;" allowfullscreen="" loading="lazy" title="Peta Lokasi Kue Koya Mayasari"></iframe>
                     </div>
                 </div>
             </div>
@@ -469,34 +517,85 @@
         </div>
     </footer>
 
-    <a href="https://wa.me/6281224351085" class="wa-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <a href="https://wa.me/6281224351085" class="wa-float" target="_blank" aria-label="Hubungi WhatsApp"><i class="fab fa-whatsapp"></i></a>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({ once: true, offset: 50 });
-
-        // Smooth Scroll & Auto Close Navbar
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                const navbarCollapse = document.querySelector('.navbar-collapse');
-                if(navbarCollapse.classList.contains('show')) {
-                    document.querySelector('.navbar-toggler').click();
-                }
-            });
+        // Inisialisasi AOS dengan optimasi
+        AOS.init({
+            once: true,
+            offset: 50,
+            duration: 800,
+            disable: window.innerWidth < 768
         });
 
-        function kirimPesan(event) {
-            event.preventDefault();
+        // Smooth Scroll & Auto Close Navbar dengan event delegation
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('.nav-link')) {
+                e.preventDefault();
+                const targetId = e.target.getAttribute('href');
+                if(targetId.startsWith('#')) {
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 70,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+                const navbarCollapse = document.querySelector('.navbar-collapse');
+                if(navbarCollapse && navbarCollapse.classList.contains('show')) {
+                    document.querySelector('.navbar-toggler').click();
+                }
+            }
+        });
+
+        // Form submission dengan optimasi
+        document.getElementById('waForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
             const nama = document.getElementById('nama').value;
             const jumlah = document.getElementById('jumlah').value;
             const varian = document.getElementById('varian').value;
             const alamat = document.getElementById('alamat').value;
             const catatan = document.getElementById('catatan').value;
             
-            let pesan = `Halo Admin Koya Mayasari,%0A%0ASaya ingin memesan:*%0A👤 Nama: ${nama}%0A📦 Jumlah: ${jumlah} Pak%0A🍪 Varian: ${varian}%0A🏠 Alamat: ${alamat}${catatan ? '%0A📝 Catatan: '+catatan : ''}`;
-            window.open(`https://wa.me/6281224351085?text=${pesan}`, '_blank');
-        }
+            // Encode untuk URL
+            const pesan = encodeURIComponent(
+                `Halo Admin Koya Mayasari,\n\nSaya ingin memesan:\n👤 Nama: ${nama}\n📦 Jumlah: ${jumlah} Pak\n🍪 Varian: ${varian}\n🏠 Alamat: ${alamat}${catatan ? '\n📝 Catatan: ' + catatan : ''}`
+            );
+            
+            // Buka WhatsApp di tab baru
+            window.open(`https://wa.me/6281224351085?text=${pesan}`, '_blank', 'noopener,noreferrer');
+            
+            // Reset form
+            this.reset();
+        });
+
+        // Pre-cache images setelah halaman dimuat
+        window.addEventListener('load', function() {
+            const images = document.querySelectorAll('img[loading="lazy"]');
+            images.forEach(img => {
+                if(img.complete) {
+                    img.style.opacity = '1';
+                } else {
+                    img.addEventListener('load', function() {
+                        this.style.opacity = '1';
+                    });
+                }
+            });
+        });
+
+        // Optimasi scroll untuk performa
+        let scrollTimeout;
+        window.addEventListener('scroll', function() {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(function() {
+                // Nonaktifkan animasi saat scrolling cepat
+                AOS.refresh();
+            }, 100);
+        });
     </script>
 </body>
 </html>
